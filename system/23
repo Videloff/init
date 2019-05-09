@@ -1,2 +1,5 @@
-* acces to 'Users & Groups' and clic on '+' or 'add'.
-* ssh: adduser #user_name#
+* graphic: if already connected to a user session, disconnect and connect to the other new one (with ID & password)
+*	at stat menu.
+*			else, connect the other session by tiping ID & password at start menu.
+* ssh: ssh #user_name#@Local_host_adresse
+*	ex : ssh test@10.0.2.15
