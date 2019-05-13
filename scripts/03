@@ -1,0 +1,28 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]
+then
+	echo "too many arguments."
+	echo "Usage : sh 03 \"Name of the movie\"."
+	exit 1
+else
+	VAR=$(curl -s https://api.themoviedb.org/3/search/movie\?api_key\=658767fbd68eea723024c351086861e5\&language\=fr-FR\&query\=$1\&page\=1\&include_adult\=false)
+	IDS=$(curl -s https://api.themoviedb.org/3/genre/movie/list?api_key=658767fbd68eea723024c351086861e5)
+	IDS_G=$(echo $IDS | sed 's/{/\\n/g' | sed 's/"/ /g' | sed 's/ },//g' | sed 's/ id ://g' | sed 's/, name //g')
+	GREP=$(echo -e "$VAR\n" | sed 's/,"/\\n/g' | sed 's/"//g')
+	echo $GREP | grep -m 1 "title:" | sed 's/:/:/' | sed 's/:/:			/'
+	RATE=$(echo $GREP | grep -m 1 "vote_average:" | sed 's/vote_average/rate/' | sed 's/:/: 			/')
+	echo "$RATE/10"
+	echo $GREP | grep -m 1 "original_title:" | sed 's/original_title/original title/' | sed 's/:/: 	/'
+	echo $GREP | grep -m 1 "release_date:" | sed 's/release_date/release date/' | cut -d '}' -f1 | sed 's/:/:		/'
+	IDS_V=$(echo $GREP | grep -m 1 "genre_ids:" | sed 's/genre_ids://' | cut -d '}' -f1 | sed 's/\[//' | sed 's/\]//' | sed 's/,/ /g')
+	IFS=' ' read -ra array <<< "$IDS_V" ;
+	GENRE=$(echo 'genre(s):		')
+	for i in ${array[@]}; do
+		ID=$(echo $IDS_G | grep $i | cut -d ' ' -f2)
+		GENRE+=$ID
+		GENRE+=", "
+	done
+	echo "$GENRE" | rev | cut -c 3- | rev
+	echo $GREP | grep -m 1 "overview:"| sed "s/overview/synopsis/" | sed "s/:/: /"
+fi
