@@ -1,1 +1,3 @@
-le-101.fr
+#mac-adress#.le-101.fr
+
+* hostname || nslookup mac_adress
